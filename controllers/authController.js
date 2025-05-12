@@ -15,6 +15,12 @@ const login = asyncHandler(async (req, res) => {
 
     const userExists = await Auth.findOne({ email });
 
+    if (!userExists) {
+      return res.status(404).json({
+        message: "User does not exists, please create an account",
+      });
+    }
+
     if (userExists && (await bcrypt.compare(password, userExists.password))) {
       return res.status(201).json({
         message: "Login Successful",
@@ -35,9 +41,9 @@ const login = asyncHandler(async (req, res) => {
 
 const register = asyncHandler(async (req, res) => {
   try {
-    const { fullName, email, password } = req.body || {};
+    const { email, password } = req.body || {};
 
-    if (!fullName || !email || !password) {
+    if (!email || !password) {
       return res.status(404).json({
         message: "Please add all the fields",
       });
@@ -47,7 +53,7 @@ const register = asyncHandler(async (req, res) => {
 
     if (userExists) {
       return res.status(404).json({
-        message: "User alredy exists ,Please log in instead.",
+        message: "User alredy exists, Please log in instead.",
       });
     }
 
@@ -56,10 +62,9 @@ const register = asyncHandler(async (req, res) => {
     const username = await email.split("@")[0];
 
     const user = await Auth.create({
-      fullName,
-      username,
       email,
       password: hashedPassword,
+      username,
     });
 
     if (user) {
@@ -72,6 +77,7 @@ const register = asyncHandler(async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Something went wrong, please try again in sometime",
+      error: error,
     });
   }
 });
