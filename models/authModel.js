@@ -4,7 +4,6 @@ const authSchema = mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: [true, "Please add your full name"],
     },
     username: {
       type: String,
