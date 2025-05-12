@@ -77,7 +77,6 @@ const register = asyncHandler(async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Something went wrong, please try again in sometime",
-      error: error,
     });
   }
 });
