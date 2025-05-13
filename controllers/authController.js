@@ -22,10 +22,14 @@ const login = asyncHandler(async (req, res) => {
     }
 
     if (userExists && (await bcrypt.compare(password, userExists.password))) {
-      return res.status(201).json({
+      return res.status(200).json({
         message: "Login Successful",
-        user: userExists,
-        token: generateToken(userExists._id),
+        user: {
+          id: userExists._id,
+          username: userExists.username,
+          email: userExists.email,
+          token: generateToken(userExists._id),
+        },
       });
     } else {
       return res.status(400).json({
@@ -61,17 +65,21 @@ const register = asyncHandler(async (req, res) => {
 
     const username = await email.split("@")[0];
 
-    const user = await Auth.create({
+    const newuser = await Auth.create({
       email,
       password: hashedPassword,
       username,
     });
 
-    if (user) {
+    if (newuser) {
       return res.status(201).json({
         message: "User registerd successfully",
-        user: user,
-        token: generateToken(user._id),
+        user: {
+          id: newuser._id,
+          username: newuser.username,
+          email: newuser.email,
+          token: generateToken(newuser._id),
+        },
       });
     }
   } catch (error) {
