@@ -22,13 +22,20 @@ const login = asyncHandler(async (req, res) => {
     }
 
     if (userExists && (await bcrypt.compare(password, userExists.password))) {
+      const token = generateToken(userExists._id);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+        maxAge: 3 * 24 * 60 * 60 * 1000,
+      });
+
       return res.status(200).json({
         message: "Login Successful",
         user: {
           id: userExists._id,
           username: userExists.username,
           email: userExists.email,
-          token: generateToken(userExists._id),
         },
       });
     } else {
@@ -89,6 +96,22 @@ const register = asyncHandler(async (req, res) => {
   }
 });
 
+const logout = (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    });
+    return res.status(200).json({
+      message: "User Logged Out Successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong, please try again in sometime",
+    });
+  }
+};
 const getUser = asyncHandler((req, res) => {
   return res.status(200).json({
     message: "Get User Information",
@@ -160,8 +183,8 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
+    expiresIn: "3d",
   });
 };
 
-module.exports = { login, register, getUser, updateUser, deleteUser };
+module.exports = { login, register, logout, getUser, updateUser, deleteUser };
