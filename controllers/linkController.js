@@ -152,6 +152,7 @@ const deleteLink = asyncHandler(async (req, res) => {
 
     if (deletedLink.deletedCount === 1) {
       return res.status(200).json({
+        id: id,
         message: "Link deleted successfully",
       });
     }
