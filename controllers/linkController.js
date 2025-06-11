@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Link = require("../models/linkModel");
+const Auth = require("../models/authModel");
 
 const getLinks = asyncHandler(async (req, res) => {
   const userInfo = req.user;
@@ -166,4 +167,36 @@ const deleteLink = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getLinks, createLink, updateLink, deleteLink };
+const getUserData = asyncHandler(async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const userInfo = await Auth.findOne({ username }).select(
+      "_id fullName username email"
+    );
+
+    if (!userInfo) {
+      return res.status(404).json({
+        message: "User does not exists",
+      });
+    }
+
+    const Links = await Link.find({ user: userInfo._id }).select(
+      "_id user platform url"
+    );
+
+    const userData = {
+      userInfo,
+      links: Links,
+    };
+
+    return res.status(200).json({
+      userData,
+      message: "User profile fetched successfully.",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+module.exports = { getLinks, createLink, updateLink, deleteLink, getUserData };

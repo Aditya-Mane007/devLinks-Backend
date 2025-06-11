@@ -5,6 +5,7 @@ const {
   createLink,
   updateLink,
   deleteLink,
+  getUserData,
 } = require("../controllers/linkController");
 const { authMiddleware } = require("../middleware/authMiddleware");
 
@@ -15,5 +16,7 @@ router.post("/createLink", authMiddleware, createLink);
 router.put("/updateLink/:id", authMiddleware, updateLink);
 
 router.delete("/deleteLink/:id", authMiddleware, deleteLink);
+
+router.get("/getUserInfo/:username", getUserData);
 
 module.exports = router;
