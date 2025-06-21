@@ -18,6 +18,9 @@ const authSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add a passoword"],
     },
+    profileImage: {
+      type: String,
+    },
   },
   {
     timestamps: true,

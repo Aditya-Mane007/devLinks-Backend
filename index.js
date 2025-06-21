@@ -10,6 +10,8 @@ const cookieParser = require("cookie-parser");
 // Routes Imports
 const authRoutes = require("./routes/authRoutes");
 const linkRoutes = require("./routes/linkRoutes");
+const { authMiddleware } = require("./middleware/authMiddleware");
+const errorMiddleware = require("./middleware/errorMiddleware");
 
 // App Initilization
 const app = express();
@@ -36,6 +38,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/link", linkRoutes);
+
+app.use(errorMiddleware);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`.blue.underline);
