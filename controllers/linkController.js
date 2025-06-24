@@ -314,9 +314,7 @@ const deleteLink = asyncHandler(async (req, res) => {
 const getUserData = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
-  const userInfo = await Auth.findOne({ username }).select(
-    "_id fullName username email"
-  );
+  const userInfo = await Auth.findOne({ username }).select("-password");
 
   if (!userInfo) {
     res.status(404);

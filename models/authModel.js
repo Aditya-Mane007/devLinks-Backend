@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 
 const authSchema = mongoose.Schema(
   {
-    fullName: {
+    firstName: {
+      type: String,
+    },
+    lastName: {
       type: String,
     },
     username: {

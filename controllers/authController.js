@@ -236,38 +236,41 @@ const getUser = asyncHandler((req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { fullName } = req.body || {};
+  const { firstName, lastName } = req.body || {};
 
-  try {
-    const userInfo = req.user;
+  const userInfo = req.user;
 
-    if (!userInfo) {
-      return res.status(401).json({
-        message: "Not Authorized",
-      });
-    }
-
-    const updatedUser = await Auth.findByIdAndUpdate(
-      userInfo._id,
-      {
-        fullName: fullName,
-      },
-      { new: true }
-    );
-
-    if (updatedUser) {
-      return res.status(200).json({
-        message: "User updated successfully",
-        user: updatedUser,
-      });
-    } else {
-      return res.status(404).json({ message: "User not found" });
-    }
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Something went wrong, please try again in sometime" });
+  if (!userInfo) {
+    throw new Error("Not Authorized");
   }
+
+  const updatedUser = await Auth.findByIdAndUpdate(
+    userInfo._id,
+    {
+      firstName: firstName,
+      lastName: lastName,
+    },
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    throw new Error("Something went wrong, please try again in sometime");
+  }
+  const updatedUserInfo = {
+    username: updatedUser.username,
+    email: updatedUser.email,
+    profileImage: updatedUser.profileImage,
+    firstName: updatedUser.firstName,
+    lastName: updatedUser.lastName,
+  };
+
+  return res.status(200).json({
+    message: "User updated successfully",
+    user: updatedUserInfo,
+  });
+  // return res
+  //   .status(500)
+  //   .json({ message: "Something went wrong, please try again in sometime" });
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
@@ -334,7 +337,6 @@ const imageUpload = asyncHandler(async (req, res) => {
           new: true,
         }
       );
-
 
       return res.status(200).json({
         imageUrl: result.secure_url,
